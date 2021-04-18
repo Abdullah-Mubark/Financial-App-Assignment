@@ -1,0 +1,27 @@
+plugins {
+	id 'java'
+}
+
+group = 'com.estishraf.assignment'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+	mavenCentral()
+}
+
+def versions = [
+		ScalaBinary: "2.13"
+]
+
+dependencies {
+	implementation platform("com.typesafe.akka:akka-bom_${versions.ScalaBinary}:2.6.14")
+
+	implementation "com.typesafe.akka:akka-actor-typed_${versions.ScalaBinary}"
+
+	implementation "org.slf4j:slf4j-nop:1.7.25"
+}
+
+test {
+	useJUnitPlatform()
+}
