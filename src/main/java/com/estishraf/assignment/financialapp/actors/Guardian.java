@@ -38,12 +38,12 @@ public class Guardian extends AbstractBehavior<Guardian.AppControlCommand> {
         quoteGenerator = getContext().spawn(QuoteGenerator.create(), "QuoteGenerator");
         //#create-actors
 
-        return this;
+        return Behaviors.same();
     }
 
     private Behavior<AppControlCommand> TriggerQuoteGeneration(TriggerQuoteGeneration command) {
         quoteGenerator.tell(new QuoteGenerator.GenerateNewQuotes());
 
-        return this;
+        return Behaviors.same();
     }
 }

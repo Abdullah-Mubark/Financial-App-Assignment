@@ -5,10 +5,12 @@ import akka.actor.typed.javadsl.AbstractBehavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
+import com.estishraf.assignment.financialapp.helpers.InitialQuotes;
+import com.estishraf.assignment.financialapp.models.Quote;
 import scala.concurrent.duration.FiniteDuration;
 
 import java.sql.Timestamp;
-import java.util.Date;
+import java.util.*;
 
 public class QuoteGenerator extends AbstractBehavior<QuoteGenerator.GenerateQuotesCommand> {
 
@@ -26,12 +28,18 @@ public class QuoteGenerator extends AbstractBehavior<QuoteGenerator.GenerateQuot
     public static class GenerateNewQuotes implements GenerateQuotesCommand {
     }
 
-    public QuoteGenerator(ActorContext<GenerateQuotesCommand> context) {
+    private final Random random = new Random();
+
+    List<Quote> quotes;
+
+    public QuoteGenerator(ActorContext<GenerateQuotesCommand> context, List<Quote> quotes) {
         super(context);
+        this.quotes = quotes;
     }
 
     public static Behavior<GenerateQuotesCommand> create() {
-        return Behaviors.setup(QuoteGenerator::new);
+        return Behaviors.setup(
+                ctx -> new QuoteGenerator(ctx, InitialQuotes.GetQuotes()));
     }
 
     @Override
@@ -54,6 +62,29 @@ public class QuoteGenerator extends AbstractBehavior<QuoteGenerator.GenerateQuot
     private Behavior<GenerateQuotesCommand> GenerateQuote(GenerateNewQuotes command) {
         System.out.println("Generate New Quote: " + new Timestamp(new Date().getTime()));
 
-        return this;
+        List<Quote> newQuotes = new ArrayList<>();
+        quotes.forEach(q -> {
+            double newPrice;
+            double priceChange;
+            double pricePercentageChange;
+
+            // 50-50 change price is going up or down
+            if (random.nextBoolean()) {
+                var upChangeMultiplier = (0.5) * random.nextDouble();
+                priceChange = q.LastPrice * upChangeMultiplier;
+            } else {
+                var downChangeMultiplier = (0.25) * random.nextDouble();
+                priceChange = -(q.LastPrice * downChangeMultiplier);
+            }
+            pricePercentageChange = priceChange / q.LastPrice;
+            newPrice = q.LastPrice + priceChange;
+
+            newQuotes.add(new Quote(q.Symbol, q.Name, newPrice, new Date(), priceChange, pricePercentageChange));
+        });
+
+        newQuotes.forEach(nq -> System.out.println(nq.toString()));
+
+        return Behaviors.setup(
+                ctx -> new QuoteGenerator(ctx, newQuotes));
     }
 }
