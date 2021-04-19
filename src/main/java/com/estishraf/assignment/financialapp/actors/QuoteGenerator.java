@@ -5,12 +5,17 @@ import akka.actor.typed.javadsl.AbstractBehavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
-import com.estishraf.assignment.financialapp.helpers.InitialQuotes;
+import com.estishraf.assignment.financialapp.helpers.Helpers;
 import com.estishraf.assignment.financialapp.models.Quote;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import scala.concurrent.duration.FiniteDuration;
 
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
 
 public class QuoteGenerator extends AbstractBehavior<QuoteGenerator.GenerateQuotesCommand> {
 
@@ -29,17 +34,18 @@ public class QuoteGenerator extends AbstractBehavior<QuoteGenerator.GenerateQuot
     }
 
     private final Random random = new Random();
+    private final KafkaProducer<String, Quote> kafkaProducer;
+    private final List<Quote> quotes;
 
-    List<Quote> quotes;
-
-    public QuoteGenerator(ActorContext<GenerateQuotesCommand> context, List<Quote> quotes) {
+    public QuoteGenerator(ActorContext<GenerateQuotesCommand> context, List<Quote> quotes) throws Exception {
         super(context);
         this.quotes = quotes;
+        this.kafkaProducer = new KafkaProducer<>(Helpers.GetAppProperties());
     }
 
     public static Behavior<GenerateQuotesCommand> create() {
         return Behaviors.setup(
-                ctx -> new QuoteGenerator(ctx, InitialQuotes.GetQuotes()));
+                ctx -> new QuoteGenerator(ctx, Helpers.GetInitialQuotes()));
     }
 
     @Override
@@ -60,7 +66,9 @@ public class QuoteGenerator extends AbstractBehavior<QuoteGenerator.GenerateQuot
     }*/
 
     private Behavior<GenerateQuotesCommand> GenerateQuote(GenerateNewQuotes command) {
-        System.out.println("Generate New Quote: " + new Timestamp(new Date().getTime()));
+
+        // Generate new quotes
+        System.out.println("Generating new quotes: " + new Timestamp(new Date().getTime()));
 
         List<Quote> newQuotes = new ArrayList<>();
         quotes.forEach(q -> {
@@ -70,19 +78,25 @@ public class QuoteGenerator extends AbstractBehavior<QuoteGenerator.GenerateQuot
 
             // 50-50 chance price is going up or down
             if (random.nextBoolean()) {
-                var upChangeMultiplier = (0.5) * random.nextDouble();
-                priceChange = q.LastPrice * upChangeMultiplier;
+                var upChangeMultiplier = Helpers.round((0.5) * random.nextDouble(), 2);
+                priceChange = Helpers.round(q.LastPrice * upChangeMultiplier, 2);
             } else {
-                var downChangeMultiplier = (0.25) * random.nextDouble();
-                priceChange = -(q.LastPrice * downChangeMultiplier);
+                var downChangeMultiplier = Helpers.round((0.25) * random.nextDouble(), 2);
+                priceChange = -(Helpers.round(q.LastPrice * downChangeMultiplier, 2));
             }
-            pricePercentageChange = priceChange / q.LastPrice;
-            newPrice = q.LastPrice + priceChange;
+            pricePercentageChange = Helpers.round(priceChange / q.LastPrice, 2);
+            newPrice = Helpers.round(q.LastPrice + priceChange, 2);
 
             newQuotes.add(new Quote(q.Symbol, q.Name, newPrice, new Date(), priceChange, pricePercentageChange));
         });
 
-        newQuotes.forEach(nq -> System.out.println(nq.toString()));
+        // Publish new quotes to Kafka
+        System.out.println("Publishing new quotes to Kafka: " + new Timestamp(new Date().getTime()));
+        for (var quote : newQuotes) {
+            final ProducerRecord<String, Quote> record =
+                    new ProducerRecord<>("quote-events-topic", quote.Symbol, quote);
+            kafkaProducer.send(record);
+        }
 
         return Behaviors.setup(
                 ctx -> new QuoteGenerator(ctx, newQuotes));
