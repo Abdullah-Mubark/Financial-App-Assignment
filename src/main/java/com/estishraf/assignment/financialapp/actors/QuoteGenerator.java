@@ -68,7 +68,7 @@ public class QuoteGenerator extends AbstractBehavior<QuoteGenerator.GenerateQuot
             double priceChange;
             double pricePercentageChange;
 
-            // 50-50 change price is going up or down
+            // 50-50 chance price is going up or down
             if (random.nextBoolean()) {
                 var upChangeMultiplier = (0.5) * random.nextDouble();
                 priceChange = q.LastPrice * upChangeMultiplier;
