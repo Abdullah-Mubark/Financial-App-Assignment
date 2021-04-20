@@ -16,6 +16,10 @@ docker-compose down -v --remove-orphans
 print_title "Cleanup finished"
 
 # Start Kafka
-print_title "Starting Kafka"
+print_title "Start Kafka"
 docker-compose up -d --build zookeeper kafka kafdrop 
 print_title "Kafka is up"
+
+# Run app
+print_title "Run App"
+docker-compose up --build financialapp
