@@ -91,12 +91,13 @@ public class QuoteGenerator extends AbstractBehavior<QuoteGenerator.GenerateQuot
         });
 
         // Publish new quotes to Kafka
-        System.out.println("Publishing new quotes to Kafka: " + new Timestamp(new Date().getTime()));
         for (var quote : newQuotes) {
             final ProducerRecord<String, Quote> record =
                     new ProducerRecord<>("quote-events-topic", quote.Symbol, quote);
             kafkaProducer.send(record);
         }
+        
+        System.out.println("New quotes published to Kafka: " + new Timestamp(new Date().getTime()));
 
         return Behaviors.setup(
                 ctx -> new QuoteGenerator(ctx, newQuotes));

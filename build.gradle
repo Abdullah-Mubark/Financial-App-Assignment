@@ -1,5 +1,8 @@
+import com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransformer
+
 plugins {
     id 'java'
+    id "com.github.johnrengelman.shadow" version "5.2.0"
 }
 
 group = 'com.estishraf.assignment'
@@ -28,6 +31,24 @@ dependencies {
     implementation 'org.projectlombok:lombok:1.18.16'
     compileOnly 'org.projectlombok:lombok:1.18.20'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'com.estishraf.assignment.financialapp.FinancialApplication'
+        )
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+shadowJar {
+    transform(AppendingTransformer) {
+        resource = 'reference.conf'
+    }
+    with jar
 }
 
 test {
