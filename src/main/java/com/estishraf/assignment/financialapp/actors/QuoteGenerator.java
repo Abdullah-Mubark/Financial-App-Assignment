@@ -1,5 +1,6 @@
 package com.estishraf.assignment.financialapp.actors;
 
+import akka.actor.typed.ActorRef;
 import akka.actor.typed.Behavior;
 import akka.actor.typed.javadsl.AbstractBehavior;
 import akka.actor.typed.javadsl.ActorContext;
@@ -36,16 +37,21 @@ public class QuoteGenerator extends AbstractBehavior<QuoteGenerator.GenerateQuot
     private final Random random = new Random();
     private final KafkaProducer<String, Quote> kafkaProducer;
     private final List<Quote> quotes;
+    private List<ActorRef<Trader.TraderCommand>> traders;
 
-    public QuoteGenerator(ActorContext<GenerateQuotesCommand> context, List<Quote> quotes) throws Exception {
+    public QuoteGenerator(ActorContext<GenerateQuotesCommand> context,
+                          List<Quote> quotes,
+                          KafkaProducer<String,Quote> kafkaProducer,
+                          List<ActorRef<Trader.TraderCommand>> traders) {
         super(context);
         this.quotes = quotes;
-        this.kafkaProducer = new KafkaProducer<>(Helpers.GetAppProperties());
+        this.kafkaProducer = kafkaProducer;
+        this.traders = traders;
     }
 
-    public static Behavior<GenerateQuotesCommand> create() {
+    public static Behavior<GenerateQuotesCommand> create(List<ActorRef<Trader.TraderCommand>> traders) {
         return Behaviors.setup(
-                ctx -> new QuoteGenerator(ctx, Helpers.GetInitialQuotes()));
+                ctx -> new QuoteGenerator(ctx, Helpers.GetInitialQuotes(), new KafkaProducer<>(Helpers.GetAppProperties()), traders));
     }
 
     @Override
@@ -96,10 +102,13 @@ public class QuoteGenerator extends AbstractBehavior<QuoteGenerator.GenerateQuot
                     new ProducerRecord<>("quote-events-topic", quote.Symbol, quote);
             kafkaProducer.send(record);
         }
-        
+
         System.out.println("New quotes published to Kafka: " + new Timestamp(new Date().getTime()));
 
+        // Notify traders about new quotes
+        traders.forEach(trader -> trader.tell(new Trader.GetNewQuotes()));
+
         return Behaviors.setup(
-                ctx -> new QuoteGenerator(ctx, newQuotes));
+                ctx -> new QuoteGenerator(ctx, newQuotes, kafkaProducer, traders));
     }
 }

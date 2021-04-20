@@ -2,7 +2,13 @@ package com.estishraf.assignment.financialapp.actors;
 
 import akka.actor.typed.ActorRef;
 import akka.actor.typed.Behavior;
-import akka.actor.typed.javadsl.*;
+import akka.actor.typed.javadsl.AbstractBehavior;
+import akka.actor.typed.javadsl.ActorContext;
+import akka.actor.typed.javadsl.Behaviors;
+import akka.actor.typed.javadsl.Receive;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Guardian extends AbstractBehavior<Guardian.AppControlCommand> {
 
@@ -23,6 +29,7 @@ public class Guardian extends AbstractBehavior<Guardian.AppControlCommand> {
         return Behaviors.setup(Guardian::new);
     }
 
+    private List<ActorRef<Trader.TraderCommand>> traders = new ArrayList<>();
     private ActorRef<QuoteGenerator.GenerateQuotesCommand> quoteGenerator;
 
     @Override
@@ -33,9 +40,10 @@ public class Guardian extends AbstractBehavior<Guardian.AppControlCommand> {
                 .build();
     }
 
-    private Behavior<AppControlCommand> BootstrapApp(BootstrapApp command) {
+    private Behavior<AppControlCommand> BootstrapApp(BootstrapApp command) throws Exception {
         //#create-actors
-        quoteGenerator = getContext().spawn(QuoteGenerator.create(), "QuoteGenerator");
+        traders.add(getContext().spawn(Trader.create("Trader 1"), "Trader-1"));
+        quoteGenerator = getContext().spawn(QuoteGenerator.create(traders), "QuoteGenerator");
         //#create-actors
 
         return Behaviors.same();
