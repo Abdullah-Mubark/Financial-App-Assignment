@@ -15,4 +15,4 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Run App
-      run: ./run_app.sh
+      run: sudo ./run_app.sh
