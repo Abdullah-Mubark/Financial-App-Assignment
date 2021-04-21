@@ -17,7 +17,7 @@ print_title "Cleanup finished"
 
 # Start Kafka
 print_title "Start Kafka"
-docker-compose up -d --build zookeeper kafka kafdrop 
+docker-compose -f docker-compose-kafka.yml up -d --build zookeeper kafka kafka2 kafka3 kafdrop 
 print_title "Kafka is up"
 
 # Run app
