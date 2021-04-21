@@ -4,17 +4,10 @@ package com.estishraf.assignment.financialapp;
 import akka.actor.typed.ActorSystem;
 import com.estishraf.assignment.financialapp.actors.Guardian;
 import com.estishraf.assignment.financialapp.helpers.Helpers;
-import com.estishraf.assignment.financialapp.models.Quote;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.KafkaAdminClient;
 import org.apache.kafka.clients.admin.ListTopicsResult;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
 
-import java.time.Duration;
-import java.util.Collections;
-import java.util.Properties;
 import java.util.Set;
 
 public class FinancialApplication {
@@ -22,7 +15,7 @@ public class FinancialApplication {
     public static void main(String[] args) throws Exception {
         System.out.println("Starting App");
 
-        checkKafkaIsUp();
+        isKafkaUp();
 
         var appProperties = Helpers.GetAppProperties();
         var quotesGenerationInterval = Integer.parseInt(appProperties.getProperty("generation.interval", "10000"));
@@ -40,7 +33,7 @@ public class FinancialApplication {
         actorSystem.terminate();
     }
 
-    public static void checkKafkaIsUp() {
+    public static void isKafkaUp() {
         try (AdminClient client = KafkaAdminClient.create(Helpers.GetAppProperties())) {
             ListTopicsResult topics = client.listTopics();
             Set<String> names = topics.names().get();

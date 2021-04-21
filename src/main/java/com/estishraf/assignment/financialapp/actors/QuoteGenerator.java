@@ -37,7 +37,7 @@ public class QuoteGenerator extends AbstractBehavior<QuoteGenerator.GenerateQuot
     private final Random random = new Random();
     private final KafkaProducer<String, Quote> kafkaProducer;
     private final List<Quote> quotes;
-    private List<ActorRef<Trader.TraderCommand>> traders;
+    private final List<ActorRef<Trader.TraderCommand>> traders;
 
     public QuoteGenerator(ActorContext<GenerateQuotesCommand> context,
                           List<Quote> quotes,

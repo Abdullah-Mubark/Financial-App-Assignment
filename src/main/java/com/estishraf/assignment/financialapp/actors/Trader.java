@@ -55,11 +55,13 @@ public class Trader extends AbstractBehavior<Trader.TraderCommand> {
     }
 
     private Behavior<TraderCommand> GetNewQuotes(GetNewQuotes command) {
-        ConsumerRecords<String, Quote> records = kafkaConsumer.poll(Duration.ofSeconds(10));
-        System.out.println(String.format("%s received %d quote, total quotes stored %s : %s",
-                name, records.count(), quotesHistory.size() + records.count(), new Timestamp(new Date().getTime())));
-        for (ConsumerRecord<String, Quote> record : records) {
-            quotesHistory.add(record.value());
+        ConsumerRecords<String, Quote> newQuotes = kafkaConsumer.poll(Duration.ofSeconds(10));
+
+        System.out.printf("%s received %d quote, total quotes stored %s : %s%n",
+                name, newQuotes.count(), quotesHistory.size() + newQuotes.count(), new Timestamp(new Date().getTime()));
+
+        for (ConsumerRecord<String, Quote> quote : newQuotes) {
+            quotesHistory.add(quote.value());
         }
 
         return Behaviors.setup(

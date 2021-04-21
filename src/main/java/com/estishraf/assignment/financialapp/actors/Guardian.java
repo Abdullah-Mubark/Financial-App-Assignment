@@ -29,8 +29,8 @@ public class Guardian extends AbstractBehavior<Guardian.AppControlCommand> {
         return Behaviors.setup(Guardian::new);
     }
 
-    private List<ActorRef<Trader.TraderCommand>> traders = new ArrayList<>();
-    private ActorRef<QuoteGenerator.GenerateQuotesCommand> quoteGenerator;
+    private final List<ActorRef<Trader.TraderCommand>> tradersActors = new ArrayList<>();
+    private ActorRef<QuoteGenerator.GenerateQuotesCommand> quoteGeneratorActor;
 
     @Override
     public Receive<AppControlCommand> createReceive() {
@@ -42,15 +42,18 @@ public class Guardian extends AbstractBehavior<Guardian.AppControlCommand> {
 
     private Behavior<AppControlCommand> BootstrapApp(BootstrapApp command) throws Exception {
         //#create-actors
-        traders.add(getContext().spawn(Trader.create("Trader 1"), "Trader-1"));
-        quoteGenerator = getContext().spawn(QuoteGenerator.create(traders), "QuoteGenerator");
+        tradersActors.add(getContext().spawn(Trader.create("Trader1"), "Trader1-Actor"));
+        tradersActors.add(getContext().spawn(Trader.create("Trader2"), "Trader2-Actor"));
+        tradersActors.add(getContext().spawn(Trader.create("Trader3"), "Trader3-Actor"));
+
+        quoteGeneratorActor = getContext().spawn(QuoteGenerator.create(tradersActors), "QuoteGenerator-Actor");
         //#create-actors
 
         return Behaviors.same();
     }
 
     private Behavior<AppControlCommand> TriggerQuoteGeneration(TriggerQuoteGeneration command) {
-        quoteGenerator.tell(new QuoteGenerator.GenerateNewQuotes());
+        quoteGeneratorActor.tell(new QuoteGenerator.GenerateNewQuotes());
 
         return Behaviors.same();
     }
