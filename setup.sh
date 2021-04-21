@@ -12,14 +12,14 @@ print_title(){
 
 # Cleanup 
 print_title "Start cleanup"
-docker-compose down -v --remove-orphans
+docker-compose -f docker-compose-base.yml -f docker-compose-kafka.yml down -v --remove-orphans
 print_title "Cleanup finished"
 
 # Start Kafka
 print_title "Start Kafka"
-docker-compose -f docker-compose-kafka.yml up -d --build zookeeper kafka kafka2 kafka3 kafdrop 
+docker-compose -f docker-compose-base.yml -f docker-compose-kafka.yml up -d --build zookeeper kafka kafka2 kafka3 kafdrop 
 print_title "Kafka is up"
 
 # Run app
 print_title "Run App"
-docker-compose up --build financialapp
+docker-compose -f docker-compose-base.yml up --build financialapp

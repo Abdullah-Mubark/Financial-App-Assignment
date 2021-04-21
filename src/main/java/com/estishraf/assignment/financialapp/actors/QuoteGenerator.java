@@ -13,10 +13,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import scala.concurrent.duration.FiniteDuration;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class QuoteGenerator extends AbstractBehavior<QuoteGenerator.GenerateQuotesCommand> {
 
@@ -41,7 +38,7 @@ public class QuoteGenerator extends AbstractBehavior<QuoteGenerator.GenerateQuot
 
     public QuoteGenerator(ActorContext<GenerateQuotesCommand> context,
                           List<Quote> quotes,
-                          KafkaProducer<String,Quote> kafkaProducer,
+                          KafkaProducer<String, Quote> kafkaProducer,
                           List<ActorRef<Trader.TraderCommand>> traders) {
         super(context);
         this.quotes = quotes;
@@ -99,7 +96,7 @@ public class QuoteGenerator extends AbstractBehavior<QuoteGenerator.GenerateQuot
         // Publish new quotes to Kafka
         for (var quote : newQuotes) {
             final ProducerRecord<String, Quote> record =
-                    new ProducerRecord<>("quote-events-topic", quote.Symbol, quote);
+                    new ProducerRecord<>("quote-events-topic", UUID.randomUUID().toString(), quote);
             kafkaProducer.send(record);
         }
 

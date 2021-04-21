@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+
+  financialapp:
+      build: .
+      networks:
+          internal:
+        
+networks:
+  internal:

@@ -61,6 +61,3 @@ services:
       internal:
     depends_on:
       - "kafka"
-  
-networks:
-  internal:
