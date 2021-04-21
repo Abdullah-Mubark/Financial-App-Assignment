@@ -13,10 +13,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 
 import java.sql.Timestamp;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class Trader extends AbstractBehavior<Trader.TraderCommand> {
 
@@ -38,8 +35,17 @@ public class Trader extends AbstractBehavior<Trader.TraderCommand> {
     }
 
     public static Behavior<TraderCommand> create(String traderName) throws Exception {
+
+        // copy default properties
+        var consumerProperties = new Properties();
+        Helpers.GetAppProperties().forEach((k, v) -> {
+            consumerProperties.setProperty((String) k, (String) v);
+        });
+
+        consumerProperties.setProperty("group.id", String.format("quotes-data-%s", traderName));
+
         var quoteConsumer =
-                new KafkaConsumer<String, Quote>(Helpers.GetAppProperties());
+                new KafkaConsumer<String, Quote>(consumerProperties);
 
         quoteConsumer.subscribe(Collections.singletonList("quote-events-topic"));
 
