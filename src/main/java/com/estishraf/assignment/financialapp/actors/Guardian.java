@@ -7,6 +7,7 @@ import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,9 +43,9 @@ public class Guardian extends AbstractBehavior<Guardian.AppControlCommand> {
 
     private Behavior<AppControlCommand> BootstrapApp(BootstrapApp command) throws Exception {
         //#create-actors
-        tradersActors.add(getContext().spawn(Trader.create("Trader1"), "Trader1-Actor"));
-        tradersActors.add(getContext().spawn(Trader.create("Trader2"), "Trader2-Actor"));
-        tradersActors.add(getContext().spawn(Trader.create("Trader3"), "Trader3-Actor"));
+        tradersActors.add(getContext().spawn(Trader.create("Trader1", new BigDecimal("10000")), "Trader1-Actor"));
+        tradersActors.add(getContext().spawn(Trader.create("Trader2", new BigDecimal("10000")), "Trader2-Actor"));
+        tradersActors.add(getContext().spawn(Trader.create("Trader3", new BigDecimal("10000")), "Trader3-Actor"));
 
         quoteGeneratorActor = getContext().spawn(QuoteGenerator.create(tradersActors), "QuoteGenerator-Actor");
         //#create-actors

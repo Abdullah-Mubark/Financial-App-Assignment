@@ -12,6 +12,8 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import scala.concurrent.duration.FiniteDuration;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -75,20 +77,20 @@ public class QuoteGenerator extends AbstractBehavior<QuoteGenerator.GenerateQuot
 
         List<Quote> newQuotes = new ArrayList<>();
         quotes.forEach(q -> {
-            double newPrice;
-            double priceChange;
-            double pricePercentageChange;
+            BigDecimal newPrice;
+            BigDecimal priceChange;
+            BigDecimal pricePercentageChange;
 
             // 50-50 chance price is going up or down
             if (random.nextBoolean()) {
-                var upChangeMultiplier = Helpers.round((0.5) * random.nextDouble(), 2);
-                priceChange = Helpers.round(q.LastPrice * upChangeMultiplier, 2);
+                var upChangeMultiplier = new BigDecimal((0.25) * random.nextDouble()).setScale(2, RoundingMode.HALF_UP);
+                priceChange = q.LastPrice.multiply(upChangeMultiplier).setScale(2, RoundingMode.HALF_UP);
             } else {
-                var downChangeMultiplier = Helpers.round((0.25) * random.nextDouble(), 2);
-                priceChange = -(Helpers.round(q.LastPrice * downChangeMultiplier, 2));
+                var downChangeMultiplier = new BigDecimal((0.20) * random.nextDouble()).setScale(2, RoundingMode.HALF_UP);
+                priceChange = (q.LastPrice.multiply(downChangeMultiplier).setScale(2, RoundingMode.HALF_UP)).negate();
             }
-            pricePercentageChange = Helpers.round(priceChange / q.LastPrice, 2);
-            newPrice = Helpers.round(q.LastPrice + priceChange, 2);
+            pricePercentageChange = priceChange.divide(q.LastPrice, 2, RoundingMode.HALF_UP);
+            newPrice = q.LastPrice.add(priceChange).setScale(2, RoundingMode.HALF_UP);
 
             newQuotes.add(new Quote(q.Symbol, q.Name, newPrice, new Date(), priceChange, pricePercentageChange));
         });
