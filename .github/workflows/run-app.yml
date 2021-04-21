@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Run App in Pipeline
 
 on:
   push:
@@ -8,11 +8,13 @@ on:
 
 jobs:
 
-  build:
+  RunApp:
 
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
+    - name: Build kafka
+      run: docker-compose -f docker-compose-base.yml -f docker-compose-kafka.yml up -d --build zookeeper kafka kafka2 kafka3 kafdrop 
     - name: Run App
-      run: sudo ./run_app.sh
+      run: docker-compose -f docker-compose-base.yml up --build financialapp
