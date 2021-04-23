@@ -1,0 +1,60 @@
+version: "3.9"
+services:
+    ndb_mgmd:
+        image: mysql/mysql-cluster:8.0.23
+        command: "ndb_mgmd --ndb-nodeid=1"
+        restart: "always"
+        networks:
+          mysqlcluster:
+            ipv4_address: 172.28.0.2
+        volumes:
+          - ./mysql/cnf/mysql-cluster.cnf:/etc/mysql-cluster.cnf
+          - ./mysql/cnf/my.cnf:/etc/my.cnf
+
+    ndbd1:
+        image: mysql/mysql-cluster:8.0.23
+        command: ndbd
+        restart: "always"
+        networks:
+          mysqlcluster:
+            ipv4_address: 172.28.0.3
+        volumes:
+          - ./mysql/cnf/mysql-cluster.cnf:/etc/mysql-cluster.cnf
+          - ./mysql/cnf/my.cnf:/etc/my.cnf  
+        depends_on:
+            - "ndb_mgmd"  
+
+    ndbd2:
+        image: mysql/mysql-cluster:8.0.23
+        command: ndbd
+        restart: "always"
+        networks:
+          mysqlcluster:
+            ipv4_address: 172.28.0.4
+        volumes:
+          - ./mysql/cnf/mysql-cluster.cnf:/etc/mysql-cluster.cnf
+          - ./mysql/cnf/my.cnf:/etc/my.cnf   
+        depends_on:
+          - "ndb_mgmd"  
+
+    mysql:
+        image: mysql/mysql-cluster:8.0.23
+        command: mysqld
+        ports:
+          - "3306:3306"
+        volumes:
+          - ./mysql/cnf/mysql-cluster.cnf:/etc/mysql-cluster.cnf
+          - ./mysql/cnf/my.cnf:/etc/my.cnf
+        environment:
+          MYSQL_DATABASE: "FinancialApp"
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_USER: admin
+          MYSQL_PASSWORD: admin
+          MYSQL_ROOT_HOST: '%'
+        depends_on:
+          - "ndb_mgmd"
+          - "ndbd1"
+          - "ndbd2"
+        networks:
+          mysqlcluster:
+            ipv4_address: 172.28.0.10

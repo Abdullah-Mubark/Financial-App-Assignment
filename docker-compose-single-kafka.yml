@@ -8,7 +8,7 @@ services:
     ports:
       - "2181:2181"
     networks: 
-        internal:
+        kafkacluster:
 
   kafka:
     image: wurstmeister/kafka:2.13-2.7.0
@@ -26,7 +26,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     #   - ${KAFKA_DATA}/500:/kafka
     networks: 
-        internal:
+       kafkacluster:
             aliases:
                 - kafka.internal
     depends_on:
@@ -42,6 +42,6 @@ services:
       JVM_OPTS: "-Xms32M -Xmx64M"
       SERVER_SERVLET_CONTEXTPATH: "/"
     networks:
-        internal:
+        kafkacluster:
     depends_on:
       - "kafka"
