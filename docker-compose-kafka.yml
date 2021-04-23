@@ -6,7 +6,7 @@ services:
     ports:
       - "2181:2181"
     networks:
-      internal:
+      kafkacluster:
 
   kafka:
     image: wurstmeister/kafka:2.13-2.7.0
@@ -18,7 +18,7 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_CREATE_TOPICS: "quote-events-topic:3:3"
     networks:
-      internal:
+      kafkacluster:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
@@ -31,7 +31,7 @@ services:
       HOSTNAME_COMMAND: "route -n | awk '/UG[ \t]/{print $$2}'"
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
     networks:
-      internal:
+      kafkacluster:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
@@ -44,7 +44,7 @@ services:
      HOSTNAME_COMMAND: "route -n | awk '/UG[ \t]/{print $$2}'"
      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
    networks:
-     internal:
+     kafkacluster:
    volumes:
      - /var/run/docker.sock:/var/run/docker.sock
        
@@ -58,6 +58,6 @@ services:
       JVM_OPTS: "-Xms32M -Xmx64M"
       SERVER_SERVLET_CONTEXTPATH: "/"
     networks:
-      internal:
+      kafkacluster:
     depends_on:
       - "kafka"
