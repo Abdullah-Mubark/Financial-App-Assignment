@@ -6,7 +6,7 @@ import akka.actor.typed.javadsl.AbstractBehavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
-import com.estishraf.assignment.financialapp.helpers.Helpers;
+import com.estishraf.assignment.financialapp.utils.AppUtil;
 import com.estishraf.assignment.financialapp.models.Quote;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -50,7 +50,7 @@ public class QuoteGenerator extends AbstractBehavior<QuoteGenerator.GenerateQuot
 
     public static Behavior<GenerateQuotesCommand> create(List<ActorRef<Trader.TraderCommand>> traders) {
         return Behaviors.setup(
-                ctx -> new QuoteGenerator(ctx, Helpers.GetInitialQuotes(), new KafkaProducer<>(Helpers.GetAppProperties()), traders));
+                ctx -> new QuoteGenerator(ctx, AppUtil.GetInitialQuotes(), new KafkaProducer<>(AppUtil.GetAppProperties()), traders));
     }
 
     @Override

@@ -3,7 +3,7 @@ package com.estishraf.assignment.financialapp;
 
 import akka.actor.typed.ActorSystem;
 import com.estishraf.assignment.financialapp.actors.Guardian;
-import com.estishraf.assignment.financialapp.helpers.Helpers;
+import com.estishraf.assignment.financialapp.utils.AppUtil;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.KafkaAdminClient;
 import org.apache.kafka.clients.admin.ListTopicsResult;
@@ -17,7 +17,7 @@ public class FinancialApplication {
 
         isKafkaUp();
 
-        var appProperties = Helpers.GetAppProperties();
+        var appProperties = AppUtil.GetAppProperties();
         var quotesGenerationInterval = Integer.parseInt(appProperties.getProperty("generation.interval", "10000"));
         var maxQuotesToGenerate = Integer.parseInt(appProperties.getProperty("generation.maxquotes", "100"));
 
@@ -34,7 +34,7 @@ public class FinancialApplication {
     }
 
     public static void isKafkaUp() {
-        try (AdminClient client = KafkaAdminClient.create(Helpers.GetAppProperties())) {
+        try (AdminClient client = KafkaAdminClient.create(AppUtil.GetAppProperties())) {
             ListTopicsResult topics = client.listTopics();
             Set<String> names = topics.names().get();
             if (names.isEmpty()) {

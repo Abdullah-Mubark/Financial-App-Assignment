@@ -1,5 +1,5 @@
 #!/bin/bash
-export COMPOSE_PROJECT_NAME="financialapp"
+export COMPOSE_PROJECT_NAME="fa"
 
 # functions
 print_title(){
@@ -22,7 +22,7 @@ print_title "MySql cluster is up"
 
 # Start Kafka
 print_title "Start Kafka cluster"
-docker-compose -f docker-compose-base.yml -f docker-compose-kafka.yml up -d --build zookeeper kafka kafdrop 
+docker-compose -f docker-compose-base.yml -f docker-compose-kafka.yml up -d zookeeper kafka kafka2 kafka3 kafdrop 
 print_title "Kafka cluster is up"
 
 # Run app
