@@ -1,4 +1,4 @@
-package com.estishraf.assignment.financialapp.helpers;
+package com.estishraf.assignment.financialapp.utils;
 
 import com.estishraf.assignment.financialapp.FinancialApplication;
 import com.estishraf.assignment.financialapp.models.Quote;
@@ -11,18 +11,19 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
-public class Helpers {
+public class AppUtil {
 
     private static Properties properties;
 
     public static Properties GetAppProperties() throws Exception {
         if (properties != null) return properties;
         try (InputStream input = FinancialApplication.class.getClassLoader().getResourceAsStream("application.properties")) {
-            properties = new Properties();
 
             if (input == null) {
                 throw new Exception("Sorry, unable to find config.properties");
             }
+
+            properties = new Properties();
 
             //load a properties file from class path, inside static method
             properties.load(input);

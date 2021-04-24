@@ -1,5 +1,7 @@
 package com.estishraf.assignment.financialapp.models;
 
+import com.estishraf.assignment.financialapp.enums.OrderStatus;
+import com.estishraf.assignment.financialapp.enums.OrderType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -10,15 +12,4 @@ public class Order {
     public int quantity;
     public OrderType orderType;
     public OrderStatus orderStatus;
-}
-
-enum OrderType {
-    Buy,
-    Sell
-}
-
-enum OrderStatus {
-    Accepted,
-    Declined,
-    Pending
 }

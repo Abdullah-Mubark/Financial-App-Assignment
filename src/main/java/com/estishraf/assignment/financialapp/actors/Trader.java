@@ -5,7 +5,7 @@ import akka.actor.typed.javadsl.AbstractBehavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
-import com.estishraf.assignment.financialapp.helpers.Helpers;
+import com.estishraf.assignment.financialapp.utils.AppUtil;
 import com.estishraf.assignment.financialapp.models.Quote;
 import com.estishraf.assignment.financialapp.models.StockOwned;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -48,7 +48,7 @@ public class Trader extends AbstractBehavior<Trader.TraderCommand> {
 
         // copy default properties
         var consumerProperties = new Properties();
-        Helpers.GetAppProperties().forEach((k, v) -> consumerProperties.setProperty((String) k, (String) v));
+        AppUtil.GetAppProperties().forEach((k, v) -> consumerProperties.setProperty((String) k, (String) v));
 
         consumerProperties.setProperty("group.id", String.format("quotes-data-%s", traderName));
 
