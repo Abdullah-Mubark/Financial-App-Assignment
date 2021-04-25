@@ -7,3 +7,37 @@ Each component is responsible for doing its job as the following:
 - The traders - these are a set of components that receives quotes from the quote generator and decides whether or not to buy or sell a particular share. To make this decision, they rely on their current amount of money💰💰💰
 - The audit -We need to keep a list of all our operations . The audit component receives operations from the Traders and address  It then stores theses in a database.
 - The traders should have different criteria to buy and sell suggested by you, and you should show what was the best criteria for making money.
+
+![Alt text](images/assignment.jfif?raw=true "Assignment")
+
+## Installation
+You only need to have [docker](https://www.docker.com/products/docker-desktop) installed 
+
+## Usage
+Make sure you have [docker](https://www.docker.com/products/docker-desktop) running
+- Open a bash terminal
+- Run script found at the project root [run_app.sh](run_app.sh)
+```bash
+./run_app.sh
+```
+- [run_app.sh](run_app.sh) will start Kafka and MySql clusters and run the app for you
+- You should see the following 
+  ![Alt text](images/app_script_running.png?raw=true "App Script Running")
+
+- Grab a cup of coffee and enjoy the show ☕
+
+## Additional Info
+#### Kafka cluster
+- You can get an overview of kafka cluster using Kafdrop through http://localhost:9000/
+  ![Alt text](images/kafka_cluster_overview.jpg?raw=true "Kafka Cluster Overview")
+#### MySql cluster
+- You can get an overview of MySql cluster by running the following commands
+```bash
+docker exec -it fa_ndb_mgmd_1 bash
+ndb_mgm
+show
+```
+  ![Alt text](images/mysql_cluster_overview.jpg?raw=true "MySql Cluster Overview")
+- You can access MySql database through localhost:3306 with the following credentials' username = admin, password = admin
+## License
+[MIT](https://choosealicense.com/licenses/mit/)

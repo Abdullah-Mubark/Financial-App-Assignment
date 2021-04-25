@@ -12,11 +12,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Set docker compose project name
-      run: export COMPOSE_PROJECT_NAME="fa"
     - name: Build MySql cluster
-      run: docker-compose -f docker-compose-base.yml -f docker-compose-mysql.yml up -d ndb_mgmd ndbd1 ndbd2 mysql
+      run: |
+        export COMPOSE_PROJECT_NAME="fa"
+        docker-compose -f docker-compose-base.yml -f docker-compose-mysql.yml up -d ndb_mgmd ndbd1 ndbd2 mysql
     - name: Build Kafka cluster
-      run: docker-compose -f docker-compose-base.yml -f docker-compose-kafka.yml up -d zookeeper kafka kafka2 kafka3 kafdrop 
+      run: |
+        export COMPOSE_PROJECT_NAME="fa"
+        docker-compose -f docker-compose-base.yml -f docker-compose-kafka.yml up -d zookeeper kafka kafka2 kafka3 kafdrop 
     - name: Run App
-      run: docker-compose -f docker-compose-base.yml up --build financialapp
+      run: |
+        export COMPOSE_PROJECT_NAME="fa"
+        docker-compose -f docker-compose-base.yml up --build financialapp
