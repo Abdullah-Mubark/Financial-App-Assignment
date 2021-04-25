@@ -7,7 +7,7 @@ import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
 import com.estishraf.assignment.financialapp.utils.AppUtil;
-import com.estishraf.assignment.financialapp.models.Quote;
+import com.estishraf.assignment.financialapp.model.Quote;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import scala.concurrent.duration.FiniteDuration;
@@ -20,14 +20,6 @@ import java.util.*;
 public class QuoteGenerator extends AbstractBehavior<QuoteGenerator.GenerateQuotesCommand> {
 
     interface GenerateQuotesCommand {
-    }
-
-    public static class StartScheduler implements GenerateQuotesCommand {
-        final FiniteDuration SCHEDULED_WORK_DELAY;
-
-        public StartScheduler(FiniteDuration scheduled_work_delay) {
-            SCHEDULED_WORK_DELAY = scheduled_work_delay;
-        }
     }
 
     public static class GenerateNewQuotes implements GenerateQuotesCommand {
@@ -60,21 +52,9 @@ public class QuoteGenerator extends AbstractBehavior<QuoteGenerator.GenerateQuot
                 .build();
     }
 
-/*    private Behavior<GenerateQuotesCommand> StartScheduler(StartScheduler startScheduler) {
-        System.out.println("Creating scheduler");
-        context().system()
-                .scheduler()
-                .scheduleAtFixedRate(
-                        Duration.Zero(), startScheduler.SCHEDULED_WORK_DELAY, context().self(), GenerateNewQuotes.class, context().system().dispatcher(), context().self());
-        System.out.println("Finished creating scheduler");
-        return this;
-    }*/
-
     private Behavior<GenerateQuotesCommand> GenerateQuote(GenerateNewQuotes command) {
 
         // Generate new quotes
-        System.out.println("Generating new quotes: " + new Timestamp(new Date().getTime()));
-
         List<Quote> newQuotes = new ArrayList<>();
         quotes.forEach(q -> {
             BigDecimal newPrice;

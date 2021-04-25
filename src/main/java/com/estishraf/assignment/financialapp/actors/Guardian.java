@@ -6,8 +6,10 @@ import akka.actor.typed.javadsl.AbstractBehavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
+import com.estishraf.assignment.financialapp.repository.TraderRepository;
+import com.estishraf.assignment.financialapp.strategy.ITraderStrategy;
+import com.estishraf.assignment.financialapp.utils.AppUtil;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +24,7 @@ public class Guardian extends AbstractBehavior<Guardian.AppControlCommand> {
     public static class TriggerQuoteGeneration implements AppControlCommand {
     }
 
-    private Guardian(ActorContext<AppControlCommand> context) {
+    private Guardian(ActorContext<AppControlCommand> context) throws Exception {
         super(context);
     }
 
@@ -30,7 +32,9 @@ public class Guardian extends AbstractBehavior<Guardian.AppControlCommand> {
         return Behaviors.setup(Guardian::new);
     }
 
-    private final List<ActorRef<Trader.TraderCommand>> tradersActors = new ArrayList<>();
+    private final List<com.estishraf.assignment.financialapp.entity.Trader> traders = AppUtil.GetInitialTraders();
+    private final TraderRepository traderRepository = new TraderRepository();
+
     private ActorRef<QuoteGenerator.GenerateQuotesCommand> quoteGeneratorActor;
 
     @Override
@@ -41,11 +45,20 @@ public class Guardian extends AbstractBehavior<Guardian.AppControlCommand> {
                 .build();
     }
 
-    private Behavior<AppControlCommand> BootstrapApp(BootstrapApp command) throws Exception {
+    private Behavior<AppControlCommand> BootstrapApp(BootstrapApp command) {
+        // Add Traders to db
+        traders.forEach(traderRepository::Add);
+
+        List<ActorRef<Trader.TraderCommand>> tradersActors = new ArrayList<>();
         //#create-actors
-        tradersActors.add(getContext().spawn(Trader.create("Trader1", new BigDecimal("10000")), "Trader1-Actor"));
-        tradersActors.add(getContext().spawn(Trader.create("Trader2", new BigDecimal("10000")), "Trader2-Actor"));
-        tradersActors.add(getContext().spawn(Trader.create("Trader3", new BigDecimal("10000")), "Trader3-Actor"));
+        traders.forEach(t -> {
+            try {
+                ITraderStrategy strategy = AppUtil.traderStrategyMapper.get(t.getStrategy());
+                tradersActors.add(getContext().spawn(Trader.create(t.getName(), t.getBalance(), strategy), t.getName()));
+            } catch (Exception e) {
+                System.out.println("error occurred while creating trader actor .. exception: " + e.getMessage());
+            }
+        });
 
         quoteGeneratorActor = getContext().spawn(QuoteGenerator.create(tradersActors), "QuoteGenerator-Actor");
         //#create-actors

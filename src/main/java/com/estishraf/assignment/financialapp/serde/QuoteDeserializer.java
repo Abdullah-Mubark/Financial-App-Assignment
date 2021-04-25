@@ -1,6 +1,6 @@
 package com.estishraf.assignment.financialapp.serde;
 
-import com.estishraf.assignment.financialapp.models.Quote;
+import com.estishraf.assignment.financialapp.model.Quote;
 import com.google.gson.Gson;
 import org.apache.kafka.common.serialization.Deserializer;
 
