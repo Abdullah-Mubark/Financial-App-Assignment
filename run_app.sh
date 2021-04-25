@@ -1,6 +1,13 @@
 #!/bin/bash
 export COMPOSE_PROJECT_NAME="fa"
 
+docker info > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+  echo "Unable to talk to the docker daemon"
+  echo "Make sure docker is running"
+  exit 3
+fi
+
 # functions
 print_title(){
     echo ""

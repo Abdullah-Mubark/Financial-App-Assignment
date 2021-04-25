@@ -5,17 +5,21 @@ import akka.actor.typed.javadsl.AbstractBehavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
+import com.estishraf.assignment.financialapp.model.Order;
+import com.estishraf.assignment.financialapp.model.Quote;
+import com.estishraf.assignment.financialapp.model.StockOwned;
+import com.estishraf.assignment.financialapp.strategy.ITraderStrategy;
 import com.estishraf.assignment.financialapp.utils.AppUtil;
-import com.estishraf.assignment.financialapp.models.Quote;
-import com.estishraf.assignment.financialapp.models.StockOwned;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
 
 public class Trader extends AbstractBehavior<Trader.TraderCommand> {
 
@@ -27,24 +31,32 @@ public class Trader extends AbstractBehavior<Trader.TraderCommand> {
 
     private final String name;
     private final BigDecimal balance;
-    private final KafkaConsumer<String, Quote> kafkaConsumer;
     private final List<Quote> quotesHistory;
     private final List<StockOwned> stocksOwned;
+    private final List<Order> orders;
+    private final ITraderStrategy strategy;
+    private final KafkaConsumer<String, Quote> kafkaConsumer;
+
 
     public Trader(ActorContext<TraderCommand> context,
-                  String name, BigDecimal balance,
+                  String name,
+                  BigDecimal balance,
                   List<Quote> quotesHistory,
                   List<StockOwned> stocksOwned,
+                  List<Order> orders,
+                  ITraderStrategy strategy,
                   KafkaConsumer<String, Quote> kafkaConsumer) {
         super(context);
         this.name = name;
         this.balance = balance;
         this.quotesHistory = quotesHistory;
         this.stocksOwned = stocksOwned;
+        this.orders = orders;
+        this.strategy = strategy;
         this.kafkaConsumer = kafkaConsumer;
     }
 
-    public static Behavior<TraderCommand> create(String traderName, BigDecimal balance) throws Exception {
+    public static Behavior<TraderCommand> create(String traderName, BigDecimal balance, ITraderStrategy strategy) throws Exception {
 
         // copy default properties
         var consumerProperties = new Properties();
@@ -58,7 +70,7 @@ public class Trader extends AbstractBehavior<Trader.TraderCommand> {
         quoteConsumer.subscribe(Collections.singletonList("quote-events-topic"));
 
         return Behaviors.setup(
-                ctx -> new Trader(ctx, traderName, balance, new ArrayList<>(), new ArrayList<>(), quoteConsumer));
+                ctx -> new Trader(ctx, traderName, balance, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), strategy, quoteConsumer));
     }
 
     @Override
@@ -69,18 +81,23 @@ public class Trader extends AbstractBehavior<Trader.TraderCommand> {
     }
 
     private Behavior<TraderCommand> GetNewQuotes() {
-        ConsumerRecords<String, Quote> newQuotes = kafkaConsumer.poll(Duration.ofSeconds(10));
+        ConsumerRecords<String, Quote> consumedQuotes = kafkaConsumer.poll(Duration.ofSeconds(10));
 
-        System.out.printf("%s received %d quote, total quotes stored %s : %s%n",
-                name, newQuotes.count(), quotesHistory.size() + newQuotes.count(), new Timestamp(new Date().getTime()));
-
-        for (ConsumerRecord<String, Quote> quote : newQuotes) {
-            quotesHistory.add(quote.value());
+        List<Quote> newQuotes = new ArrayList<>();
+        for (ConsumerRecord<String, Quote> consumedQuote : consumedQuotes) {
+            newQuotes.add(consumedQuote.value());
+            quotesHistory.add(consumedQuote.value());
         }
         Collections.sort(quotesHistory);
 
+        var generatedOrders = strategy.GenerateOrders(balance, quotesHistory, newQuotes, stocksOwned);
+        generatedOrders.forEach(order -> {
+            orders.add(order);
+            // Call Validator
+        });
+
         return Behaviors.setup(
-                ctx -> new Trader(ctx, name, balance, quotesHistory, stocksOwned, kafkaConsumer));
+                ctx -> new Trader(ctx, name, balance, quotesHistory, stocksOwned, orders, strategy, kafkaConsumer));
     }
 
 }

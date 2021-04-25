@@ -1,4 +1,4 @@
-package com.estishraf.assignment.financialapp.models;
+package com.estishraf.assignment.financialapp.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

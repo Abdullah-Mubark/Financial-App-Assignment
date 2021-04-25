@@ -16,7 +16,8 @@ public class HibernateUtil {
 
         Configuration configuration = new Configuration()
                 .setProperties(AppUtil.GetAppProperties())
-                .addAnnotatedClass(com.estishraf.assignment.financialapp.entity.TraderTransaction.class);
+                .addAnnotatedClass(com.estishraf.assignment.financialapp.entity.TraderTransaction.class)
+                .addAnnotatedClass(com.estishraf.assignment.financialapp.entity.Trader.class);
 
         ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
                 .applySettings(configuration.getProperties()).build();
