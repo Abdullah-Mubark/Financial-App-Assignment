@@ -8,7 +8,10 @@ Each component is responsible for doing its job as the following:
 - The audit -We need to keep a list of all our operations . The audit component receives operations from the Traders and address  It then stores theses in a database.
 - The traders should have different criteria to buy and sell suggested by you, and you should show what was the best criteria for making money.
 
-<img alt="app_script_running" src="images/app_script_running.png" width="600" height="600" >
+<div style="text-align:center">
+    <img alt="assignment" src="images/assignment.jfif" width="485" height="730">
+</div>
+
 
 ## Installation
 You only need to have [docker](https://www.docker.com/products/docker-desktop) installed 
@@ -21,8 +24,8 @@ Make sure you have [docker](https://www.docker.com/products/docker-desktop) runn
 ./run_app.sh
 ```
 - [run_app.sh](run_app.sh) will start Kafka and MySql clusters and run the app for you
-- You should see the following 
-  ![Alt text](images/app_script_running.png?raw=true "App Script Running")
+- You should see the following
+- <img alt="app_script_running" src="images/app_script_running.png" width="990" height="938" >
 
 - Grab a cup of coffee and enjoy the show ☕
 
