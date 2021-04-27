@@ -36,6 +36,7 @@ public class Guardian extends AbstractBehavior<Guardian.AppControlCommand> {
     private final TraderRepository traderRepository = new TraderRepository();
 
     private ActorRef<QuoteGenerator.GenerateQuotesCommand> quoteGeneratorActor;
+    private ActorRef<Audit.AuditCommand> audit;
 
     @Override
     public Receive<AppControlCommand> createReceive() {
@@ -51,16 +52,18 @@ public class Guardian extends AbstractBehavior<Guardian.AppControlCommand> {
 
         List<ActorRef<Trader.TraderCommand>> tradersActors = new ArrayList<>();
         //#create-actors
+        audit = getContext().spawn(Audit.create(), "Audit");
+
         traders.forEach(t -> {
             try {
                 ITraderStrategy strategy = AppUtil.traderStrategyMapper.get(t.getStrategy());
-                tradersActors.add(getContext().spawn(Trader.create(t.getName(), t.getBalance(), strategy), t.getName()));
+                tradersActors.add(getContext().spawn(Trader.create(t.getName(), t.getBalance(), strategy, audit), t.getName()));
             } catch (Exception e) {
                 System.out.println("error occurred while creating trader actor .. exception: " + e.getMessage());
             }
         });
 
-        quoteGeneratorActor = getContext().spawn(QuoteGenerator.create(tradersActors), "QuoteGenerator-Actor");
+        quoteGeneratorActor = getContext().spawn(QuoteGenerator.create(tradersActors), "QuoteGenerator");
         //#create-actors
 
         return Behaviors.same();

@@ -25,4 +25,27 @@ public class TraderRepository {
             System.out.println("Failed while saving trader data in db .. Exception: " + e.getMessage());
         }
     }
+
+    public void Update(Trader trader) {
+        Transaction tx = null;
+        try (Session session = sessionFactory.openSession()) {
+            tx = session.beginTransaction();
+            session.update(trader);
+            tx.commit();
+        } catch (HibernateException e) {
+            if (tx != null) tx.rollback();
+            System.out.println("Failed while updating trader data in db .. Exception: " + e.getMessage());
+        }
+    }
+
+    public Trader Get(String name) {
+        Trader trader;
+        try (Session session = sessionFactory.openSession()) {
+            trader = session.get(Trader.class, name);
+        } catch (HibernateException e) {
+            System.out.println("Failed while fetching trader data in db .. Exception: " + e.getMessage());
+            throw e;
+        }
+        return trader;
+    }
 }
