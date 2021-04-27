@@ -129,7 +129,7 @@ public class Audit extends AbstractBehavior<Audit.AuditCommand> {
                 .sum();
 
         // check if no enough stocks owned to sell
-        if ((quantity - quantityOwned) < 0) {
+        if ((quantityOwned - quantity) < 0) {
             return false;
         }
 
