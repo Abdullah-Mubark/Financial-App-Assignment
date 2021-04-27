@@ -12,7 +12,7 @@ import java.util.Map;
 public class QuoteDeserializer implements Closeable, AutoCloseable, Deserializer<Quote> {
 
     private static final Charset CHARSET = StandardCharsets.UTF_8;
-    static private final Gson gson = new Gson();
+    private static final Gson gson = new Gson();
 
     @Override
     public void configure(Map configs, boolean isKey) {

@@ -1,5 +1,7 @@
 package com.estishraf.assignment.financialapp.enums;
 
 public enum TraderStrategy {
-    Basic
+    Basic,
+    Bad,
+    Good
 }
