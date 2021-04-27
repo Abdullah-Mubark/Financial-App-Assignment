@@ -232,7 +232,7 @@ public class Trader extends AbstractBehavior<Trader.TraderCommand> {
                     .orElse(null);
 
             assert stockOwned != null;
-            stockOwned.quantity = stockOwned.quantity + sellOrderToProcess.quantity;
+            stockOwned.quantity = stockOwned.quantity - sellOrderToProcess.quantity;
 
             stocksOwnedUpdated.set(stockIndex, stockOwned);
         }
