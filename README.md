@@ -8,7 +8,7 @@ Each component is responsible for doing its job as the following:
 - The audit -We need to keep a list of all our operations . The audit component receives operations from the Traders and address  It then stores theses in a database.
 - The traders should have different criteria to buy and sell suggested by you, and you should show what was the best criteria for making money.
 
-![Alt text](images/assignment.jfif?raw=true "Assignment")
+<img alt="app_script_running" src="images/app_script_running.png" width="600" height="600" >
 
 ## Installation
 You only need to have [docker](https://www.docker.com/products/docker-desktop) installed 
