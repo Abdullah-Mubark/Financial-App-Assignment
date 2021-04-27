@@ -23,7 +23,7 @@ public class SimpleTraderStrategy implements ITraderStrategy {
                 return;
             }
 
-            if (ShouldBuy(quote)) {
+            if (ShouldBuy(balance, quote)) {
                 var quantity = CalculateHowMuchToBuy(balance, quote);
                 if (quantity == 0) return;
                 newOrders.add(new Order(UUID.randomUUID(), quote, quantity, OrderType.Buy, OrderStatus.Pending));
@@ -42,9 +42,11 @@ public class SimpleTraderStrategy implements ITraderStrategy {
         return newOrders;
     }
 
-    private boolean ShouldBuy(Quote quote) {
-        boolean priceWentDown10PercentOrMore = quote.ChangeInPercentage.compareTo(new BigDecimal("0.1").negate()) <= 0;
-        return priceWentDown10PercentOrMore;
+    private boolean ShouldBuy(BigDecimal balance, Quote quote) {
+        if (balance.compareTo(new BigDecimal(1000)) <= 0)
+            return false;
+
+        return quote.ChangeInPercentage.compareTo(new BigDecimal("0.15").negate()) <= 0;
     }
 
     private boolean ShouldSell(Quote quote, List<StockOwned> stocksOwned) {
@@ -63,8 +65,7 @@ public class SimpleTraderStrategy implements ITraderStrategy {
                         .multiply(new BigDecimal("100.0"))
                         .setScale(2, RoundingMode.UP);
 
-        boolean priceWentUp10PercentOrMoreFromAverageBuy = changeOfCurrentPriceToAverageBuyPricePercent.compareTo(new BigDecimal("0.15")) >= 0;
-        return priceWentUp10PercentOrMoreFromAverageBuy;
+        return changeOfCurrentPriceToAverageBuyPricePercent.compareTo(new BigDecimal("0.15")) >= 0;
     }
 
     private int CalculateHowMuchToBuy(BigDecimal balance, Quote quote) {

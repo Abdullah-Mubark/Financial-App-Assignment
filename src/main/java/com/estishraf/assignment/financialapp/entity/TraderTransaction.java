@@ -38,4 +38,70 @@ public class TraderTransaction {
 
     public TraderTransaction() {
     }
+
+    public TraderTransaction(UUID id, Trader trader, String stock, BigDecimal price, int quantity, OrderType type, Date time) {
+        this.id = id;
+        this.trader = trader;
+        this.stock = stock;
+        this.price = price;
+        this.quantity = quantity;
+        this.type = type;
+        this.time = time;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public Trader getTrader() {
+        return trader;
+    }
+
+    public void setTrader(Trader trader) {
+        this.trader = trader;
+    }
+
+    public String getStock() {
+        return stock;
+    }
+
+    public void setStock(String stock) {
+        this.stock = stock;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public OrderType getType() {
+        return type;
+    }
+
+    public void setType(OrderType type) {
+        this.type = type;
+    }
+
+    public Date getTime() {
+        return time;
+    }
+
+    public void setTime(Date time) {
+        this.time = time;
+    }
 }

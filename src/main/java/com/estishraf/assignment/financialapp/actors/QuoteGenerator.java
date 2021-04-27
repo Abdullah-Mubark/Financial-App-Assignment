@@ -10,7 +10,6 @@ import com.estishraf.assignment.financialapp.utils.AppUtil;
 import com.estishraf.assignment.financialapp.model.Quote;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import scala.concurrent.duration.FiniteDuration;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -85,7 +84,7 @@ public class QuoteGenerator extends AbstractBehavior<QuoteGenerator.GenerateQuot
         System.out.println("New quotes published to Kafka: " + new Timestamp(new Date().getTime()));
 
         // Notify traders about new quotes
-        traders.forEach(trader -> trader.tell(new Trader.GetNewQuotes()));
+        traders.forEach(trader -> trader.tell(new Trader.ConsumeNewQuotes()));
 
         return Behaviors.setup(
                 ctx -> new QuoteGenerator(ctx, newQuotes, kafkaProducer, traders));
