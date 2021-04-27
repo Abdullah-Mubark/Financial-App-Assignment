@@ -25,7 +25,8 @@ Make sure you have [docker](https://www.docker.com/products/docker-desktop) runn
 ```
 - [run_app.sh](run_app.sh) will start Kafka and MySql clusters and run the app for you
 - You should see the following
-- <img alt="app_script_running" src="images/app_script_running.png" width="990" height="938" >
+-   ![Alt text](images/app_script_running.png?raw=true "App Script Running")
+
 
 - Grab a cup of coffee and enjoy the show ☕
 
