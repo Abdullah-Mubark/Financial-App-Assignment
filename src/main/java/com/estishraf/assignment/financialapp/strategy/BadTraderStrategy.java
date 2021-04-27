@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class SimpleTraderStrategy implements ITraderStrategy {
+public class BadTraderStrategy implements ITraderStrategy {
 
     @Override
     public List<Order> GenerateOrders(BigDecimal balance, List<Quote> quotesHistory, List<Quote> newQuotes, List<StockOwned> stocksOwned) {
@@ -24,7 +24,7 @@ public class SimpleTraderStrategy implements ITraderStrategy {
             }
 
             if (ShouldBuy(balance, quote)) {
-                var quantity = CalculateHowMuchToBuy(balance, quote);
+                var quantity = CalculateHowMuchToBuy(balance, quote, new BigDecimal("0.25"));
                 if (quantity == 0) return;
                 newOrders.add(new Order(UUID.randomUUID(), quote, quantity, OrderType.Buy, OrderStatus.Pending));
                 return;
@@ -46,7 +46,7 @@ public class SimpleTraderStrategy implements ITraderStrategy {
         if (balance.compareTo(new BigDecimal(1000)) <= 0)
             return false;
 
-        return quote.ChangeInPercentage.compareTo(new BigDecimal("0.15").negate()) <= 0;
+        return quote.ChangeInPercentage.compareTo(new BigDecimal("0.10")) >= 0;
     }
 
     private boolean ShouldSell(Quote quote, List<StockOwned> stocksOwned) {
@@ -62,14 +62,13 @@ public class SimpleTraderStrategy implements ITraderStrategy {
                 quote.LastPrice
                         .subtract(stockOwned.averagePrice)
                         .divide(stockOwned.averagePrice, 2, RoundingMode.UP)
-                        .multiply(new BigDecimal("100.0"))
                         .setScale(2, RoundingMode.UP);
 
-        return changeOfCurrentPriceToAverageBuyPricePercent.compareTo(new BigDecimal("0.15")) >= 0;
+        return changeOfCurrentPriceToAverageBuyPricePercent.compareTo(new BigDecimal("0.20").negate()) <= 0;
     }
 
-    private int CalculateHowMuchToBuy(BigDecimal balance, Quote quote) {
-        var buyingCash = balance.multiply(new BigDecimal("0.1"));
+    private int CalculateHowMuchToBuy(BigDecimal balance, Quote quote, BigDecimal percentageOfCash) {
+        var buyingCash = balance.multiply(percentageOfCash);
         return buyingCash.divide(quote.LastPrice, 0, RoundingMode.CEILING).intValue();
     }
 }

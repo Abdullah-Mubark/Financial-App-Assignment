@@ -119,7 +119,7 @@ public class Audit extends AbstractBehavior<Audit.AuditCommand> {
 
         // filter transactions for this stock
         var traderTransactions = traderTransactionRepository
-                .GetTraderTransactions(trader)
+                .GetByTrader(trader)
                 .stream().filter(tt -> tt.getStock().equals(quote.Symbol))
                 .collect(Collectors.toList());
 

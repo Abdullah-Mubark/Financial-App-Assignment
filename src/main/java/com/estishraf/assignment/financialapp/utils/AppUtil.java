@@ -4,8 +4,10 @@ import com.estishraf.assignment.financialapp.FinancialApplication;
 import com.estishraf.assignment.financialapp.entity.Trader;
 import com.estishraf.assignment.financialapp.enums.TraderStrategy;
 import com.estishraf.assignment.financialapp.model.Quote;
+import com.estishraf.assignment.financialapp.strategy.BadTraderStrategy;
+import com.estishraf.assignment.financialapp.strategy.BasicTraderStrategy;
+import com.estishraf.assignment.financialapp.strategy.GoodTraderStrategy;
 import com.estishraf.assignment.financialapp.strategy.ITraderStrategy;
-import com.estishraf.assignment.financialapp.strategy.SimpleTraderStrategy;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,7 +19,9 @@ public class AppUtil {
     private static Properties properties;
 
     public static final Map<TraderStrategy, ITraderStrategy> traderStrategyMapper = Map.of(
-            TraderStrategy.Basic, new SimpleTraderStrategy()
+            TraderStrategy.Basic, new BasicTraderStrategy(),
+            TraderStrategy.Bad, new BadTraderStrategy(),
+            TraderStrategy.Good, new GoodTraderStrategy()
     );
 
     public static Properties GetAppProperties() throws Exception {
@@ -55,8 +59,8 @@ public class AppUtil {
         return new ArrayList<>() {
             {
                 add(new Trader("Trader-1", new BigDecimal("10000.0"), TraderStrategy.Basic));
-                add(new Trader("Trader-2", new BigDecimal("10000.0"), TraderStrategy.Basic));
-                add(new Trader("Trader-3", new BigDecimal("10000.0"), TraderStrategy.Basic));
+                add(new Trader("Trader-2", new BigDecimal("10000.0"), TraderStrategy.Bad));
+                add(new Trader("Trader-3", new BigDecimal("10000.0"), TraderStrategy.Good));
             }
         };
     }

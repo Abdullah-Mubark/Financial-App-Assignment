@@ -29,7 +29,7 @@ public class TraderTransactionRepository {
         }
     }
 
-    public List<TraderTransaction> GetTraderTransactions(Trader trader) {
+    public List<TraderTransaction> GetByTrader(Trader trader) {
         List<TraderTransaction> traderTransactions;
         try (Session session = sessionFactory.openSession()) {
             traderTransactions = session

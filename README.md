@@ -12,6 +12,19 @@ Each component is responsible for doing its job as the following:
     <img alt="assignment" src="images/assignment.jfif" width="485" height="730">
 </div>
 
+## Configurations
+By default, the app will have the following configurations:
+- Quotes generator will generate a new quote every 30 second.
+- Quotes generator will generate up to 25 quotes and then terminates app.
+- App will have 5 pre-defined companies.
+- App will have 3 pre-defined traders.
+- Traders will start with initial balance of 10,000 each.
+- Traders will have different trading strategies.
+- Trader 1 will have a basic trading strategy.
+- Trader 2 will have a bad trading strategy.
+- Trader 3 will have a good trading strategy.
+
+You can override these configurations if you want
 
 ## Installation
 You only need to have [docker](https://www.docker.com/products/docker-desktop) installed 
@@ -25,7 +38,7 @@ Make sure you have [docker](https://www.docker.com/products/docker-desktop) runn
 ```
 - [run_app.sh](run_app.sh) will start Kafka and MySql clusters and run the app for you
 - You should see the following
--   ![Alt text](images/app_script_running.png?raw=true "App Script Running")
+  ![app_script_running](images/app_script_running.png?raw=true "App Script Running")
 
 
 - Grab a cup of coffee and enjoy the show ☕
@@ -33,7 +46,7 @@ Make sure you have [docker](https://www.docker.com/products/docker-desktop) runn
 ## Additional Info
 #### Kafka cluster
 - You can get an overview of kafka cluster using Kafdrop through http://localhost:9000/
-  ![Alt text](images/kafka_cluster_overview.jpg?raw=true "Kafka Cluster Overview")
+  ![kafka_cluster_overview](images/kafka_cluster_overview.jpg?raw=true "Kafka Cluster Overview")
 #### MySql cluster
 - You can get an overview of MySql cluster by running the following commands
 ```bash
@@ -41,7 +54,7 @@ docker exec -it fa_ndb_mgmd_1 bash
 ndb_mgm
 show
 ```
-  ![Alt text](images/mysql_cluster_overview.jpg?raw=true "MySql Cluster Overview")
+  ![mysql_cluster_overview](images/mysql_cluster_overview.jpg?raw=true "MySql Cluster Overview")
 - You can access MySql database through localhost:3306 with the following credentials' username = admin, password = admin
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
