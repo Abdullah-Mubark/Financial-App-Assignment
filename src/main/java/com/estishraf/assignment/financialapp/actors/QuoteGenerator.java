@@ -71,10 +71,10 @@ public class QuoteGenerator extends AbstractBehavior<QuoteGenerator.GenerateQuot
 
             // 50-50 chance price is going up or down
             if (random.nextBoolean()) {
-                var upChangeMultiplier = BigDecimal.valueOf((0.5) * random.nextDouble()).setScale(2, RoundingMode.HALF_UP);
+                var upChangeMultiplier = BigDecimal.valueOf((0.75) * random.nextDouble()).setScale(2, RoundingMode.HALF_UP);
                 priceChange = q.LastPrice.multiply(upChangeMultiplier).setScale(2, RoundingMode.HALF_UP);
             } else {
-                var downChangeMultiplier = BigDecimal.valueOf((0.25) * random.nextDouble()).setScale(2, RoundingMode.HALF_UP);
+                var downChangeMultiplier = BigDecimal.valueOf((0.5) * random.nextDouble()).setScale(2, RoundingMode.HALF_UP);
                 priceChange = (q.LastPrice.multiply(downChangeMultiplier).setScale(2, RoundingMode.HALF_UP)).negate();
             }
             pricePercentageChange = priceChange.divide(q.LastPrice, 2, RoundingMode.HALF_UP);
