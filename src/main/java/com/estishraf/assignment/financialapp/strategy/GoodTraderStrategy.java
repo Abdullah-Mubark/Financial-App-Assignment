@@ -49,7 +49,7 @@ public class GoodTraderStrategy implements ITraderStrategy {
         var changeOfCurrentPriceToStockPriceHistoryAveragePercent =
                 CalculateChangeOfCurrentPriceToStockHistoryAveragePricePercent(quote.LastPrice, stockPriceHistoryAverage);
 
-        return changeOfCurrentPriceToStockPriceHistoryAveragePercent.compareTo(new BigDecimal("0.20").negate()) <= 0;
+        return changeOfCurrentPriceToStockPriceHistoryAveragePercent.compareTo(new BigDecimal("0.40").negate()) <= 0;
     }
 
     private boolean ShouldSell(Quote quote, List<StockOwned> stocksOwned) {
@@ -64,7 +64,7 @@ public class GoodTraderStrategy implements ITraderStrategy {
         var changeOfCurrentPriceToAverageBuyPricePercent =
                 CalculateChangeOfCurrentPriceToAverageBuyPricePercent(quote.LastPrice, stockOwned.averagePrice);
 
-        return changeOfCurrentPriceToAverageBuyPricePercent.compareTo(new BigDecimal("0.30")) >= 0;
+        return changeOfCurrentPriceToAverageBuyPricePercent.compareTo(new BigDecimal("0.40")) >= 0;
     }
 
     private int CalculateHowMuchToBuy(BigDecimal balance, List<Quote> quotesHistory, Quote quote) {
@@ -75,7 +75,7 @@ public class GoodTraderStrategy implements ITraderStrategy {
                 CalculateChangeOfCurrentPriceToStockHistoryAveragePricePercent(quote.LastPrice, stockPriceHistoryAverage);
 
         BigDecimal percentageOfCash;
-        if (changeOfCurrentPriceToStockPriceHistoryAveragePercent.compareTo(new BigDecimal("0.50").negate()) <= 0) {
+        if (changeOfCurrentPriceToStockPriceHistoryAveragePercent.compareTo(new BigDecimal("1.0").negate()) <= 0) {
             percentageOfCash = new BigDecimal("0.30");
         } else {
             percentageOfCash = new BigDecimal("0.15");

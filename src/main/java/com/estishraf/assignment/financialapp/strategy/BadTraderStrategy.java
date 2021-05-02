@@ -46,7 +46,7 @@ public class BadTraderStrategy implements ITraderStrategy {
         if (balance.compareTo(new BigDecimal(1000)) <= 0)
             return false;
 
-        return quote.ChangeInPercentage.compareTo(new BigDecimal("0.10")) >= 0;
+        return quote.ChangeInPercentage.compareTo(new BigDecimal("0.25")) >= 0;
     }
 
     private boolean ShouldSell(Quote quote, List<StockOwned> stocksOwned) {
@@ -58,7 +58,7 @@ public class BadTraderStrategy implements ITraderStrategy {
         if (stockOwned == null || stockOwned.quantity == 0)
             return false;
 
-        return quote.ChangeInPercentage.compareTo(new BigDecimal("0.10").negate()) <= 0;
+        return quote.ChangeInPercentage.compareTo(new BigDecimal("0.25").negate()) <= 0;
     }
 
     private int CalculateHowMuchToBuy(BigDecimal balance, Quote quote, BigDecimal percentageOfCash) {
